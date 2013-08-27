@@ -26,6 +26,7 @@ UNION_O			= union.o
 TEST_PROG_1 	= test_quickfind_constructors
 TEST_PROG_2   = test_quickfind_find
 TEST_PROG_3		= test_quickfind_unite
+TEST_PROG_4   = test_quickunion_constructors
 
 TEST_PROG_DIR = ./tests/
 
@@ -36,6 +37,7 @@ msg:
 	@echo '			t1 or ${TEST_PROG_1}'
 	@echo '			t2 or ${TEST_PROG_2}'
 	@echo '			t3 or ${TEST_PROG_3}'
+	@echo '			t4 or ${TEST_PROG_4}'
 
 union.o:	union.h	union.cpp
 	${CXX} ${CXX_FLAGS} ${INCLUDE_OPT} -c union.cpp ${COMPILER_OUT_2}
@@ -53,6 +55,7 @@ test_%.o: ${UNION_H} ${TEST_PROG_DIR}test_%.cpp
 p1:  ${TEST_PROG_1}
 p2:  ${TEST_PROG_2} p1
 p3:	 ${TEST_PROG_3} p2
+p4:  ${TEST_PROG_4} p3
 
 t1: p1 ${TEST_PROG_1}
 	${Q}./${TEST_PROG_1}
@@ -60,8 +63,10 @@ t2: p2 t1
 	${Q}./${TEST_PROG_2}
 t3: p3 t2
 	${Q}./${TEST_PROG_3}
+t4: p4 t3
+	${Q}./${TEST_PROG_4}
 
-tests: t3
+tests: t4
 
 clean:
 	@rm *.o

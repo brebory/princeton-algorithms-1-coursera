@@ -75,4 +75,11 @@ namespace BR {
       entries.at((QuickUnion::size_type) getRoot(node1)) = getRoot(node2);
     }
   }
+
+  std::ostream& operator<<(std::ostream& out, const QuickUnion& source) {
+    for(QuickUnion::size_type idx = 0; idx < (QuickUnion::size_type) source.entries.size(); ++idx) {
+      out << source.entries.at(idx);
+    }
+    return out;
+  }
 }
