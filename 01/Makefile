@@ -25,6 +25,7 @@ UNION_O			= union.o
 
 TEST_PROG_1 	= test_quickfind_constructors
 TEST_PROG_2   = test_quickfind_find
+TEST_PROG_3		= test_quickfind_unite
 
 TEST_PROG_DIR = ./tests/
 
@@ -34,6 +35,7 @@ msg:
 	@echo 'Targets for compiling test programs:'
 	@echo '			t1 or ${TEST_PROG_1}'
 	@echo '			t2 or ${TEST_PROG_2}'
+	@echo '			t3 or ${TEST_PROG_3}'
 
 union.o:	union.h	union.cpp
 	${CXX} ${CXX_FLAGS} ${INCLUDE_OPT} -c union.cpp ${COMPILER_OUT_2}
@@ -50,13 +52,16 @@ test_%.o: ${UNION_H} ${TEST_PROG_DIR}test_%.cpp
 
 p1:  ${TEST_PROG_1}
 p2:  ${TEST_PROG_2} p1
+p3:	 ${TEST_PROG_3} p2
 
 t1: p1 ${TEST_PROG_1}
 	${Q}./${TEST_PROG_1}
 t2: p2 t1
 	${Q}./${TEST_PROG_2}
+t3: p3 t2
+	${Q}./${TEST_PROG_3}
 
-tests: t2
+tests: t3
 
 clean:
 	@rm *.o
