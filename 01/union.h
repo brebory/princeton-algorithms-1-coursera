@@ -3,47 +3,10 @@
 
 namespace BR {
 
-  typedef T int;
-
-  class Union {
-    std::vector<Node*> nodes;
-    std::vector<Edge*> edges;
-
-    Union();
-    Union(std::vector<T>, std::vector<T>);
-    Union(const Union&);
-    
-    ~Union();
-
-    unite(Node*, Node*);
-  };
-
-  class Node {
-    T* data;
-
-    Node();
-    Node(const T&);
-    Node(const Node&);
-
-    ~Node();
-  };
-
-  class Edge {
-    Node* left;
-    Node* right;
-
-    Edge();
-    Edge(T, T);
-    Edge(Node*, Node*);
-    Edge(const Edge&);
-
-    ~Edge();
-  };
-  
   class QuickFind {
   public:
-    typedef ID int;
-    typedef size_type int;
+    typedef int ID;
+    typedef int size_type;
 
     // Default constructor
     QuickFind();
@@ -64,6 +27,27 @@ namespace BR {
 
     std::vector<ID> entries;
 
+  };
+
+  class QuickUnion {
+  public:
+    typedef int ID;
+    typedef int size_type;
+
+    QuickUnion();
+    QuickUnion(size_type*, size_type);
+
+    bool find(size_type, size_type);
+
+    void unite(size_type, size_type);
+
+    bool isRoot(size_type);
+
+    ID getRoot(size_type);
+
+    friend std::ostream& operator<<(std::ostream&, const QuickUnion&);
+
+    std::vector<ID> entries;
   };
 
 }
