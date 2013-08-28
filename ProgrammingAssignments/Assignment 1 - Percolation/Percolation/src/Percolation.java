@@ -1,17 +1,62 @@
-
 /**
  * @author Brendon Roberto
  *
  */
 public class Percolation {
 	
+	private interface Identifiable {
+		int id();
+	}
+
+	
+	private enum Status {
+		BLOCKED, UNBLOCKED
+	}
+	
+	private class Site implements Identifiable {
+		
+		/**
+		 * Class Site provides a model of a single site in
+		 * a percolation simulation. A site is either BLOCKED or
+		 * UNBLOCKED.
+		 */
+		
+		private Status 	_status;
+		private int 	_id;
+		
+		public Site(int x, int y, int n) {
+			// Check for valid arguments
+			if (n > 0 && n > x && n > y) {
+				_status = Status.BLOCKED;
+				_id = (x * n) + y;	
+			} else {
+				throw new IllegalArgumentException(
+						String.format("Cannot construct Site at index [%d][%d] in grid of size %d.",
+									  x, y, n));
+			}	
+		}
+		
+		public boolean isBlocked() {
+			return _status == Status.BLOCKED;
+		}
+		
+		public void unblock() {
+			_status = Status.UNBLOCKED;
+		}
+
+		@Override
+		public int id() {
+			return _id;
+		}
+	}
+	
 	/**
 	 * Class Percolation provides a simulation interface for running 
 	 * percolation simulators. 
 	 */
-	
-	private Site[][] _grid;
-	private QuickFindUF _paths;
+
+	private Site[][] 	_grid;
+	private WeightedQuickUnionUF _paths;
 	private int _size;
 	
 	/**
@@ -27,13 +72,14 @@ public class Percolation {
 				_grid[i][j] = new Site(i, j, _size);
 			}
 		}
-		_paths = new QuickFindUF(_size * _size);
+		_paths = new WeightedQuickUnionUF(_size * _size);
 	}
 	
 	/**
 	 * Method open changes the status of the site at 
 	 * _grid[i][j] to unblocked. It also updates _paths
-	 * to connect the site to its neighbors. 
+	 * to connect the site to its neighbors as well as
+	 * updating blockedSites by removing the entry at i, j
 	 * 
 	 * @param i row index to open
 	 * @param j column index to open
@@ -44,25 +90,26 @@ public class Percolation {
 			throw new IndexOutOfBoundsException("Invalid indices for open method.");
 		}
 		Site current = _grid[i][j];
-		current.unblock();
-		Site left = this.getLeftNeighbor(i, j);
-		Site right = this.getRightNeighbor(i, j);
-		Site top = this.getTopNeighbor(i, j);
-		Site bottom = this.getBottomNeighbor(i, j);
-		
-		if (left != null && !left.isBlocked()) {
-			_paths.union(current.id(), left.id());
+		if (current.isBlocked()) {
+			current.unblock();
+			Site left = this.getLeftNeighbor(i, j);
+			Site right = this.getRightNeighbor(i, j);
+			Site top = this.getTopNeighbor(i, j);
+			Site bottom = this.getBottomNeighbor(i, j);
+			
+			if (left != null && !left.isBlocked()) {
+				_paths.union(current.id(), left.id());
+			}
+			if (right != null && !right.isBlocked()) {
+				_paths.union(current.id(), right.id());
+			}
+			if (top != null) {
+				_paths.union(current.id(), top.id());
+			}
+			if (bottom != null) {
+				_paths.union(current.id(), bottom.id());
+			}		
 		}
-		if (right != null && !right.isBlocked()) {
-			_paths.union(current.id(), right.id());
-		}
-		if (top != null) {
-			_paths.union(current.id(), top.id());
-		}
-		if (bottom != null) {
-			_paths.union(current.id(), bottom.id());
-		}
-		
 	}
 	
 	/**
@@ -126,6 +173,7 @@ public class Percolation {
 	 * @param j column index to check
 	 * @return the site at _grid[i][j-1] or null
 	 */
+
 	private Site getLeftNeighbor(int i, int j) {
 		if (j - 1 < 0) {
 			return null;
